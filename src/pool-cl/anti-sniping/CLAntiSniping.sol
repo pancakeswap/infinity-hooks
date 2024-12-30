@@ -24,6 +24,7 @@ import {SafeCast} from "pancake-v4-core/src/libraries/SafeCast.sol";
 
 /// @title AntiSnipingHook
 /// @notice A PancakeSwap V4 hook that prevents MEV sniping attacks by enforcing time locks on positions and redistributing fees accrued in the initial block to legitimate liquidity providers.
+/// Notice this hook only prevents getting fees from swaps or donations in the same block, but does not prevent any other type of MEV attacks such as sandwiching or frontrunning swaps.
 /// @dev Positions are time-locked, and fees accrued in the first block after position creation are redistributed.
 contract CLAntiSniping is CLBaseHook {
     using PoolIdLibrary for PoolKey;
@@ -35,8 +36,12 @@ contract CLAntiSniping is CLBaseHook {
     /// @notice The duration (in blocks) for which a position must remain locked before it can be removed.
     uint128 public immutable positionLockDuration;
 
+    uint128 public constant MAX_LOCK_DURATION = 7500000;
+
     /// @notice The maximum number of positions that can be created in the same block per pool to prevent excessive gas usage.
     uint128 public immutable sameBlockPositionsLimit;
+
+    uint128 public constant MIN_SAME_BLOCK_POSITIONS_LIMIT = 50;
 
     mapping(PoolId => uint256) lastProcessedBlockNumber;
 
@@ -71,8 +76,16 @@ contract CLAntiSniping is CLBaseHook {
     constructor(ICLPoolManager poolManager, uint128 _positionLockDuration, uint128 _sameBlockPositionsLimit)
         CLBaseHook(poolManager)
     {
-        positionLockDuration = _positionLockDuration;
-        sameBlockPositionsLimit = _sameBlockPositionsLimit;
+        if (_positionLockDuration < MAX_LOCK_DURATION) {
+            positionLockDuration = _positionLockDuration;
+        } else {
+            positionLockDuration = MAX_LOCK_DURATION;
+        }
+        if (_sameBlockPositionsLimit > MIN_SAME_BLOCK_POSITIONS_LIMIT) {
+            sameBlockPositionsLimit = _sameBlockPositionsLimit;
+        } else {
+            sameBlockPositionsLimit = MIN_SAME_BLOCK_POSITIONS_LIMIT;
+        }
     }
 
     function getHooksRegistrationBitmap() external pure override returns (uint16) {
@@ -112,9 +125,9 @@ contract CLAntiSniping is CLBaseHook {
             (uint256 feeGrowthInside0X128, uint256 feeGrowthInside1X128) = _getFeeGrowthInside(poolId, params.sender, params.tickLower, params.tickUpper, params.salt);
             uint256 feeGrowthDelta0X128 = feeGrowthInside0X128 - info.feeGrowthInside0LastX128;
             uint256 feeGrowthDelta1X128 = feeGrowthInside1X128 - info.feeGrowthInside1LastX128;
-            firstBlockFeesToken0[poolId][positionKey] =
+            firstBlockFeesToken0[poolId][positionKey] +=
                                 FullMath.mulDiv(feeGrowthDelta0X128, info.liquidity, FixedPoint128.Q128);
-            firstBlockFeesToken1[poolId][positionKey] =
+            firstBlockFeesToken1[poolId][positionKey] +=
                                 FullMath.mulDiv(feeGrowthDelta1X128, info.liquidity, FixedPoint128.Q128);
         }
 
@@ -130,7 +143,7 @@ contract CLAntiSniping is CLBaseHook {
         BalanceDelta,
         BalanceDelta,
         bytes calldata
-    ) external override returns (bytes4, BalanceDelta) {
+    ) external override poolManagerOnly returns (bytes4, BalanceDelta) {
         PoolId poolId = key.toId();
         bytes32 positionKey = CLPosition.calculatePositionKey(sender, params.tickLower, params.tickUpper, params.salt);
 
@@ -163,7 +176,7 @@ contract CLAntiSniping is CLBaseHook {
         PoolKey calldata key,
         ICLPoolManager.ModifyLiquidityParams calldata params,
         bytes calldata
-    ) external override returns (bytes4) {
+    ) external override poolManagerOnly returns (bytes4) {
         PoolId poolId = key.toId();
         collectLastBlockInfo(poolId);
         bytes32 positionKey = CLPosition.calculatePositionKey(sender, params.tickLower, params.tickUpper, params.salt);
@@ -174,7 +187,7 @@ contract CLAntiSniping is CLBaseHook {
         liqParams.salt = params.salt;
 
         if (positionCreationBlock[poolId][positionKey] != 0 &&
-            block.number - positionCreationBlock[poolId][positionKey] < positionLockDuration) {
+            block.number - positionCreationBlock[poolId][positionKey] <= positionLockDuration) {
             revert PositionAlreadyExistsAndLocked();
         }
         if (positionsCreatedInLastBlock[poolId].length >= sameBlockPositionsLimit) revert TooManyPositionsInSameBlock();
@@ -193,11 +206,11 @@ contract CLAntiSniping is CLBaseHook {
         PoolKey calldata key,
         ICLPoolManager.ModifyLiquidityParams calldata params,
         bytes calldata
-    ) external override returns (bytes4) {
+    ) external override poolManagerOnly returns (bytes4) {
         PoolId poolId = key.toId();
         collectLastBlockInfo(poolId);
         bytes32 positionKey = CLPosition.calculatePositionKey(sender, params.tickLower, params.tickUpper, params.salt);
-        if (block.number - positionCreationBlock[poolId][positionKey] < positionLockDuration) revert PositionLocked();
+        if (block.number - positionCreationBlock[poolId][positionKey] <= positionLockDuration) revert PositionLocked();
         CLPosition.Info memory info = poolManager.getPosition(poolId, sender, params.tickLower, params.tickUpper, params.salt);
         if (int128(info.liquidity) + params.liquidityDelta != 0) revert PositionPartiallyWithdrawn();
         return (this.beforeRemoveLiquidity.selector);
@@ -208,6 +221,7 @@ contract CLAntiSniping is CLBaseHook {
     function beforeSwap(address, PoolKey calldata key, ICLPoolManager.SwapParams calldata, bytes calldata)
         external
         override
+        poolManagerOnly
         returns (bytes4, BeforeSwapDelta, uint24)
     {
         PoolId poolId = key.toId();
@@ -220,6 +234,7 @@ contract CLAntiSniping is CLBaseHook {
     function beforeDonate(address, PoolKey calldata key, uint256, uint256, bytes calldata)
         external
         override
+        poolManagerOnly
         returns (bytes4)
     {
         PoolId poolId = key.toId();

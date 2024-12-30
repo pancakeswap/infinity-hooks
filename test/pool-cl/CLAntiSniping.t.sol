@@ -268,7 +268,7 @@ contract AntiSnipingTest is Test, Deployers, DeployPermit2 {
         assertEq(antiSniping.firstBlockFeesToken1(poolId, bobPositionKey), 0);
 
         // Advance to after position lock duration
-        vm.roll(POSITION_LOCK_DURATION + 2);
+        vm.roll(POSITION_LOCK_DURATION + 3);
 
         // Bob removes liquidity
         _decreaseLiquidityPosition(BOB, bobTokenId, 10000 ether, ZERO_BYTES);
@@ -332,7 +332,7 @@ contract AntiSnipingTest is Test, Deployers, DeployPermit2 {
         assertApproxEqRel(antiSniping.firstBlockFeesToken1(poolId, bobPositionKey), token1Donation / 2, allowedError);
 
         // Advance to after position lock duration
-        vm.roll(POSITION_LOCK_DURATION + 2);
+        vm.roll(POSITION_LOCK_DURATION + 3);
 
         // Bob removes liquidity
         _decreaseLiquidityPosition(BOB, bobTokenId, 10000 ether, ZERO_BYTES);
@@ -378,7 +378,7 @@ contract AntiSnipingTest is Test, Deployers, DeployPermit2 {
         assertApproxEqAbsDecimal(antiSniping.firstBlockFeesToken0(poolId, alicePositionKey), token0ExpectedFees, 1e15, 18);
 
         // Advance to after position lock duration
-        vm.roll(POSITION_LOCK_DURATION + 1);
+        vm.roll(POSITION_LOCK_DURATION + 2);
 
         // Alice removes liquidity
         _decreaseLiquidityPosition(ALICE, aliceTokenId, 10000 ether, ZERO_BYTES);
@@ -406,7 +406,7 @@ contract AntiSnipingTest is Test, Deployers, DeployPermit2 {
         _increaseLiquidityPosition(ALICE, aliceTokenId, 10000 ether, ZERO_BYTES);
 
         // Advance to after position lock duration
-        vm.roll(POSITION_LOCK_DURATION + 1);
+        vm.roll(POSITION_LOCK_DURATION + 3);
 
         // Alice add liquidity
         _increaseLiquidityPosition(ALICE, aliceTokenId, 10000 ether, ZERO_BYTES);
@@ -419,7 +419,7 @@ contract AntiSnipingTest is Test, Deployers, DeployPermit2 {
         uint256 token0ExpectedFees = (uint256(swapAmount) * FEE) / 1e6; // Swap amount * fee percentage
 
         // Advance to after position lock duration
-        vm.roll(POSITION_LOCK_DURATION + 3);
+        vm.roll(POSITION_LOCK_DURATION + 4);
         _performSwapExactOutputSingle(CANDY, false, swapAmount);
         uint256 token1ExpectedFees = (uint256(swapAmount) * FEE) / 1e6;
 
@@ -439,7 +439,7 @@ contract AntiSnipingTest is Test, Deployers, DeployPermit2 {
         _decreaseLiquidityPosition(ALICE, aliceTokenId, 20000 ether, ZERO_BYTES);
 
         // Advance to after position lock duration
-        vm.roll(POSITION_LOCK_DURATION + POSITION_LOCK_DURATION + 2);
+        vm.roll(POSITION_LOCK_DURATION + POSITION_LOCK_DURATION + 5);
 
         // Attempt to remove liquidity partially and expect revert
         vm.expectRevert();
