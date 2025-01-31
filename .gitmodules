@@ -4,12 +4,9 @@
 [submodule "lib/forge-gas-snapshot"]
 	path = lib/forge-gas-snapshot
 	url = https://github.com/marktoda/forge-gas-snapshot
-[submodule "lib/pancake-v4-universal-router"]
-	path = lib/pancake-v4-universal-router
-	url = https://github.com/pancakeswap/pancake-v4-universal-router
-[submodule "lib/pancake-create3-factory"]
-	path = lib/pancake-create3-factory
-	url = https://github.com/pancakeswap/pancake-create3-factory
 [submodule "lib/infinity-universal-router"]
 	path = lib/infinity-universal-router
 	url = https://github.com/pancakeswap/infinity-universal-router
+[submodule "lib/pancake-create3-factory"]
+	path = lib/pancake-create3-factory
+	url = https://github.com/pancakeswap/pancake-create3-factory
