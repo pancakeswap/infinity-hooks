@@ -27,7 +27,7 @@ import {MockCLSwapRouter} from "./helpers/MockCLSwapRouter.sol";
 import {MockCLPositionManager} from "./helpers/MockCLPositionManager.sol";
 
 import {CLFullRange} from "../../src/pool-cl/full-range/CLFullRange.sol";
-import {PancakeV4ERC20} from "../../src/pool-cl/full-range/libraries/PancakeV4ERC20.sol";
+import {PancakeFullRangeERC20} from "../../src/pool-cl/full-range/libraries/PancakeFullRangeERC20.sol";
 
 contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
     using PoolIdLibrary for PoolKey;
@@ -267,7 +267,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
         );
 
         (bool hasAccruedFees, address liquidityToken) = fullRange.poolInfo(id);
-        uint256 liquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+        uint256 liquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
 
         assertEq(poolManager.getLiquidity(id), liquidityTokenBalance + MINIMUM_LIQUIDITY);
 
@@ -388,7 +388,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
             );
 
             (bool hasAccruedFees, address liquidityToken) = fullRange.poolInfo(id);
-            uint256 liquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+            uint256 liquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
 
             assertEq(poolManager.getLiquidity(id), liquidityTokenBalance + MINIMUM_LIQUIDITY);
             assertEq(hasAccruedFees, false);
@@ -400,7 +400,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
 
         (, address liquidityToken) = fullRange.poolInfo(id);
 
-        PancakeV4ERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
+        PancakeFullRangeERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
 
         vm.expectRevert();
         fullRange.removeLiquidity(
@@ -421,7 +421,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
 
         (, address liquidityToken) = fullRange.poolInfo(idWithLiq);
 
-        PancakeV4ERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
+        PancakeFullRangeERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
 
         fullRange.removeLiquidity(
             CLFullRange.RemoveLiquidityParams({
@@ -435,10 +435,10 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
         );
 
         (bool hasAccruedFees,) = fullRange.poolInfo(idWithLiq);
-        uint256 liquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+        uint256 liquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
 
         assertEq(poolManager.getLiquidity(idWithLiq), liquidityTokenBalance + MINIMUM_LIQUIDITY);
-        assertEq(PancakeV4ERC20(liquidityToken).balanceOf(address(this)), 99 ether - MINIMUM_LIQUIDITY + 5);
+        assertEq(PancakeFullRangeERC20(liquidityToken).balanceOf(address(this)), 99 ether - MINIMUM_LIQUIDITY + 5);
         assertEq(keyWithLiq.currency0.balanceOf(address(this)), prevBalance0 + 1 ether - 1);
         assertEq(keyWithLiq.currency1.balanceOf(address(this)), prevBalance1 + 1 ether - 1);
         assertEq(hasAccruedFees, false);
@@ -464,9 +464,9 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
 
         (, address liquidityToken) = fullRange.poolInfo(id);
 
-        PancakeV4ERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
+        PancakeFullRangeERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
 
-        if (amount > PancakeV4ERC20(liquidityToken).balanceOf(address(this))) {
+        if (amount > PancakeFullRangeERC20(liquidityToken).balanceOf(address(this))) {
             vm.expectRevert();
             fullRange.removeLiquidity(
                 CLFullRange.RemoveLiquidityParams({
@@ -479,7 +479,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
                 })
             );
         } else {
-            uint256 prevLiquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+            uint256 prevLiquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
 
             fullRange.removeLiquidity(
                 CLFullRange.RemoveLiquidityParams({
@@ -492,7 +492,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
                 })
             );
 
-            uint256 liquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+            uint256 liquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
             (bool hasAccruedFees,) = fullRange.poolInfo(id);
 
             assertEq(prevLiquidityTokenBalance - liquidityTokenBalance, amount);

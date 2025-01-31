@@ -27,7 +27,7 @@ import {SafeERC20} from "openzeppelin-contracts/contracts/token/ERC20/utils/Safe
 
 import {CLBaseHook} from "../CLBaseHook.sol";
 import {LiquidityAmounts} from "./libraries/LiquidityAmounts.sol";
-import {PancakeV4ERC20} from "./libraries/PancakeV4ERC20.sol";
+import {PancakeFullRangeERC20} from "./libraries/PancakeFullRangeERC20.sol";
 
 /// @notice A hook that makes a CL pool allow only full range liquidity, which
 /// essentialy makes it a v2 pool.
@@ -198,10 +198,10 @@ contract CLFullRange is CLBaseHook {
         if (poolLiquidity == 0) {
             // permanently lock the first MINIMUM_LIQUIDITY tokens
             liquidity -= MINIMUM_LIQUIDITY;
-            PancakeV4ERC20(pool.liquidityToken).mint(address(0), MINIMUM_LIQUIDITY);
+            PancakeFullRangeERC20(pool.liquidityToken).mint(address(0), MINIMUM_LIQUIDITY);
         }
 
-        PancakeV4ERC20(pool.liquidityToken).mint(params.to, liquidity);
+        PancakeFullRangeERC20(pool.liquidityToken).mint(params.to, liquidity);
 
         if (uint128(-addedDelta.amount0()) < params.amount0Min || uint128(-addedDelta.amount1()) < params.amount1Min) {
             revert TooMuchSlippage();
@@ -231,7 +231,7 @@ contract CLFullRange is CLBaseHook {
 
         if (sqrtPriceX96 == 0) revert PoolNotInitialized();
 
-        PancakeV4ERC20 liquidityToken = PancakeV4ERC20(poolInfo[poolId].liquidityToken);
+        PancakeFullRangeERC20 liquidityToken = PancakeFullRangeERC20(poolInfo[poolId].liquidityToken);
 
         delta = _modifyPosition(
             key,
@@ -269,7 +269,7 @@ contract CLFullRange is CLBaseHook {
                 Strings.toString(uint256(key.fee))
             )
         );
-        address poolToken = address(new PancakeV4ERC20(tokenSymbol, tokenSymbol));
+        address poolToken = address(new PancakeFullRangeERC20(tokenSymbol, tokenSymbol));
 
         poolInfo[poolId] = PoolInfo({hasAccruedFees: false, liquidityToken: poolToken});
 
@@ -381,7 +381,7 @@ contract CLFullRange is CLBaseHook {
         uint256 liquidityToRemove = FullMath.mulDiv(
             uint256(-params.liquidityDelta),
             poolManager.getLiquidity(poolId),
-            PancakeV4ERC20(pool.liquidityToken).totalSupply()
+            PancakeFullRangeERC20(pool.liquidityToken).totalSupply()
         );
 
         params.liquidityDelta = -(liquidityToRemove.toInt256());
