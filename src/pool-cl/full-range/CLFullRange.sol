@@ -260,7 +260,7 @@ contract CLFullRange is CLBaseHook {
 
         string memory tokenSymbol = string(
             abi.encodePacked(
-                "PancakeV4",
+                "PancakeInfinity",
                 "-",
                 IERC20Metadata(Currency.unwrap(key.currency0)).symbol(),
                 "-",
