@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import {BaseScript} from "./BaseScript.sol";
 
 import {SampleCLDynamicFeeHook} from "../src/pool-cl/dynamic-fee/SampleCLDynamicFeeHook.sol";
-import {ICLPoolManager} from "pancake-v4-core/src/pool-cl/interfaces/ICLPoolManager.sol";
+import {ICLPoolManager} from "infinity-core/src/pool-cl/interfaces/ICLPoolManager.sol";
 import {Create3Factory} from "pancake-create3-factory/src/Create3Factory.sol";
 
 /**
@@ -21,7 +21,7 @@ import {Create3Factory} from "pancake-create3-factory/src/Create3Factory.sol";
  */
 contract DeploySampleCLDynamicFeeHookScript is BaseScript {
     function getDeploymentSalt() public pure override returns (bytes32) {
-        return keccak256("PANCAKE-V4-HOOKS/SampleCLDynamicFeeHook/0.90");
+        return keccak256("INFINITY-HOOKS/SampleCLDynamicFeeHook/0.90");
     }
 
     function run() public {

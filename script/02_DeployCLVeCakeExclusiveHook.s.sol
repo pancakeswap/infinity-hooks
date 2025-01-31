@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import {BaseScript} from "./BaseScript.sol";
 
 import {CLVeCakeExclusiveHook} from "../src/pool-cl/vecake-exclusive/CLVeCakeExclusiveHook.sol";
-import {ICLPoolManager} from "pancake-v4-core/src/pool-cl/interfaces/ICLPoolManager.sol";
+import {ICLPoolManager} from "infinity-core/src/pool-cl/interfaces/ICLPoolManager.sol";
 import {Create3Factory} from "pancake-create3-factory/src/Create3Factory.sol";
 
 /**
@@ -21,7 +21,7 @@ import {Create3Factory} from "pancake-create3-factory/src/Create3Factory.sol";
  */
 contract DeployCLVeCakeExclusiveHookScript is BaseScript {
     function getDeploymentSalt() public pure override returns (bytes32) {
-        return keccak256("PANCAKE-V4-HOOKS/CLVeCakeExclusiveHook/0.90");
+        return keccak256("INFINITY-HOOKS/CLVeCakeExclusiveHook/0.90");
     }
 
     function run() public {

@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import {BaseScript} from "./BaseScript.sol";
 
 import {BinVeCakeExclusiveHook} from "../src/pool-bin/vecake-exclusive/BinVeCakeExclusiveHook.sol";
-import {IBinPoolManager} from "pancake-v4-core/src/pool-bin/interfaces/IBinPoolManager.sol";
+import {IBinPoolManager} from "infinity-core/src/pool-bin/interfaces/IBinPoolManager.sol";
 import {Create3Factory} from "pancake-create3-factory/src/Create3Factory.sol";
 
 /**
@@ -21,7 +21,7 @@ import {Create3Factory} from "pancake-create3-factory/src/Create3Factory.sol";
  */
 contract DeployBinVeCakeExclusiveHookScript is BaseScript {
     function getDeploymentSalt() public pure override returns (bytes32) {
-        return keccak256("PANCAKE-V4-HOOKS/BinVeCakeExclusiveHook/0.90");
+        return keccak256("INFINITY-HOOKS/BinVeCakeExclusiveHook/0.90");
     }
 
     function run() public {
