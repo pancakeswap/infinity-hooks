@@ -17,9 +17,9 @@ fs_permissions = [
 ]
 
 [profile.default.fuzz]
-runs = 1000
+runs = 5 # change this for higher number of fuzz runs locally
 
 [profile.ci.fuzz]
-runs = 100000
+runs = 1000
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

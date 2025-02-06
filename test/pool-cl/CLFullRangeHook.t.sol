@@ -3,23 +3,23 @@ pragma solidity ^0.8.19;
 
 import {Test} from "forge-std/Test.sol";
 
-import {ICLPoolManager} from "pancake-v4-core/src/pool-cl/interfaces/ICLPoolManager.sol";
-import {IVault} from "pancake-v4-core/src/interfaces/IVault.sol";
-import {CLPoolManager} from "pancake-v4-core/src/pool-cl/CLPoolManager.sol";
-import {Vault} from "pancake-v4-core/src/Vault.sol";
-import {Currency, CurrencyLibrary} from "pancake-v4-core/src/types/Currency.sol";
-import {PoolKey} from "pancake-v4-core/src/types/PoolKey.sol";
-import {PoolId, PoolIdLibrary} from "pancake-v4-core/src/types/PoolId.sol";
-import {CLPoolParametersHelper} from "pancake-v4-core/src/pool-cl/libraries/CLPoolParametersHelper.sol";
-import {TickMath} from "pancake-v4-core/src/pool-cl/libraries/TickMath.sol";
-import {SortTokens} from "pancake-v4-core/test/helpers/SortTokens.sol";
-import {Deployers} from "pancake-v4-core/test/pool-cl/helpers/Deployers.sol";
+import {ICLPoolManager} from "infinity-core/src/pool-cl/interfaces/ICLPoolManager.sol";
+import {IVault} from "infinity-core/src/interfaces/IVault.sol";
+import {CLPoolManager} from "infinity-core/src/pool-cl/CLPoolManager.sol";
+import {Vault} from "infinity-core/src/Vault.sol";
+import {Currency, CurrencyLibrary} from "infinity-core/src/types/Currency.sol";
+import {PoolKey} from "infinity-core/src/types/PoolKey.sol";
+import {PoolId, PoolIdLibrary} from "infinity-core/src/types/PoolId.sol";
+import {CLPoolParametersHelper} from "infinity-core/src/pool-cl/libraries/CLPoolParametersHelper.sol";
+import {TickMath} from "infinity-core/src/pool-cl/libraries/TickMath.sol";
+import {SortTokens} from "infinity-core/test/helpers/SortTokens.sol";
+import {Deployers} from "infinity-core/test/pool-cl/helpers/Deployers.sol";
 import {MockERC20} from "solmate/src/test/utils/mocks/MockERC20.sol";
 
-import {Hooks} from "pancake-v4-core/src/libraries/Hooks.sol";
-import {ICLHooks} from "pancake-v4-core/src/pool-cl/interfaces/ICLHooks.sol";
-import {CustomRevert} from "pancake-v4-core/src/libraries/CustomRevert.sol";
-import {ICLRouterBase} from "pancake-v4-periphery/src/pool-cl/interfaces/ICLRouterBase.sol";
+import {Hooks} from "infinity-core/src/libraries/Hooks.sol";
+import {ICLHooks} from "infinity-core/src/pool-cl/interfaces/ICLHooks.sol";
+import {CustomRevert} from "infinity-core/src/libraries/CustomRevert.sol";
+import {ICLRouterBase} from "infinity-periphery/src/pool-cl/interfaces/ICLRouterBase.sol";
 import {DeployPermit2} from "permit2/test/utils/DeployPermit2.sol";
 import {IAllowanceTransfer} from "permit2/src/interfaces/IAllowanceTransfer.sol";
 
@@ -27,7 +27,7 @@ import {MockCLSwapRouter} from "./helpers/MockCLSwapRouter.sol";
 import {MockCLPositionManager} from "./helpers/MockCLPositionManager.sol";
 
 import {CLFullRange} from "../../src/pool-cl/full-range/CLFullRange.sol";
-import {PancakeV4ERC20} from "../../src/pool-cl/full-range/libraries/PancakeV4ERC20.sol";
+import {PancakeFullRangeERC20} from "../../src/pool-cl/full-range/libraries/PancakeFullRangeERC20.sol";
 
 contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
     using PoolIdLibrary for PoolKey;
@@ -267,7 +267,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
         );
 
         (bool hasAccruedFees, address liquidityToken) = fullRange.poolInfo(id);
-        uint256 liquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+        uint256 liquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
 
         assertEq(poolManager.getLiquidity(id), liquidityTokenBalance + MINIMUM_LIQUIDITY);
 
@@ -388,7 +388,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
             );
 
             (bool hasAccruedFees, address liquidityToken) = fullRange.poolInfo(id);
-            uint256 liquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+            uint256 liquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
 
             assertEq(poolManager.getLiquidity(id), liquidityTokenBalance + MINIMUM_LIQUIDITY);
             assertEq(hasAccruedFees, false);
@@ -400,7 +400,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
 
         (, address liquidityToken) = fullRange.poolInfo(id);
 
-        PancakeV4ERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
+        PancakeFullRangeERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
 
         vm.expectRevert();
         fullRange.removeLiquidity(
@@ -421,7 +421,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
 
         (, address liquidityToken) = fullRange.poolInfo(idWithLiq);
 
-        PancakeV4ERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
+        PancakeFullRangeERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
 
         fullRange.removeLiquidity(
             CLFullRange.RemoveLiquidityParams({
@@ -435,10 +435,10 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
         );
 
         (bool hasAccruedFees,) = fullRange.poolInfo(idWithLiq);
-        uint256 liquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+        uint256 liquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
 
         assertEq(poolManager.getLiquidity(idWithLiq), liquidityTokenBalance + MINIMUM_LIQUIDITY);
-        assertEq(PancakeV4ERC20(liquidityToken).balanceOf(address(this)), 99 ether - MINIMUM_LIQUIDITY + 5);
+        assertEq(PancakeFullRangeERC20(liquidityToken).balanceOf(address(this)), 99 ether - MINIMUM_LIQUIDITY + 5);
         assertEq(keyWithLiq.currency0.balanceOf(address(this)), prevBalance0 + 1 ether - 1);
         assertEq(keyWithLiq.currency1.balanceOf(address(this)), prevBalance1 + 1 ether - 1);
         assertEq(hasAccruedFees, false);
@@ -464,9 +464,9 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
 
         (, address liquidityToken) = fullRange.poolInfo(id);
 
-        PancakeV4ERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
+        PancakeFullRangeERC20(liquidityToken).approve(address(fullRange), type(uint256).max);
 
-        if (amount > PancakeV4ERC20(liquidityToken).balanceOf(address(this))) {
+        if (amount > PancakeFullRangeERC20(liquidityToken).balanceOf(address(this))) {
             vm.expectRevert();
             fullRange.removeLiquidity(
                 CLFullRange.RemoveLiquidityParams({
@@ -479,7 +479,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
                 })
             );
         } else {
-            uint256 prevLiquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+            uint256 prevLiquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
 
             fullRange.removeLiquidity(
                 CLFullRange.RemoveLiquidityParams({
@@ -492,7 +492,7 @@ contract CLFullRangeHookTest is Test, Deployers, DeployPermit2 {
                 })
             );
 
-            uint256 liquidityTokenBalance = PancakeV4ERC20(liquidityToken).balanceOf(address(this));
+            uint256 liquidityTokenBalance = PancakeFullRangeERC20(liquidityToken).balanceOf(address(this));
             (bool hasAccruedFees,) = fullRange.poolInfo(id);
 
             assertEq(prevLiquidityTokenBalance - liquidityTokenBalance, amount);

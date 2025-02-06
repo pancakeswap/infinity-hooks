@@ -3,21 +3,21 @@ pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
 
-import {ICLPoolManager} from "pancake-v4-core/src/pool-cl/interfaces/ICLPoolManager.sol";
-import {IVault} from "pancake-v4-core/src/interfaces/IVault.sol";
-import {CLPoolManager} from "pancake-v4-core/src/pool-cl/CLPoolManager.sol";
-import {Vault} from "pancake-v4-core/src/Vault.sol";
-import {Currency} from "pancake-v4-core/src/types/Currency.sol";
-import {PoolKey} from "pancake-v4-core/src/types/PoolKey.sol";
-import {PoolId, PoolIdLibrary} from "pancake-v4-core/src/types/PoolId.sol";
-import {CLPoolParametersHelper} from "pancake-v4-core/src/pool-cl/libraries/CLPoolParametersHelper.sol";
-import {TickMath} from "pancake-v4-core/src/pool-cl/libraries/TickMath.sol";
-import {SortTokens} from "pancake-v4-core/test/helpers/SortTokens.sol";
-import {Deployers} from "pancake-v4-core/test/pool-cl/helpers/Deployers.sol";
+import {ICLPoolManager} from "infinity-core/src/pool-cl/interfaces/ICLPoolManager.sol";
+import {IVault} from "infinity-core/src/interfaces/IVault.sol";
+import {CLPoolManager} from "infinity-core/src/pool-cl/CLPoolManager.sol";
+import {Vault} from "infinity-core/src/Vault.sol";
+import {Currency} from "infinity-core/src/types/Currency.sol";
+import {PoolKey} from "infinity-core/src/types/PoolKey.sol";
+import {PoolId, PoolIdLibrary} from "infinity-core/src/types/PoolId.sol";
+import {CLPoolParametersHelper} from "infinity-core/src/pool-cl/libraries/CLPoolParametersHelper.sol";
+import {TickMath} from "infinity-core/src/pool-cl/libraries/TickMath.sol";
+import {SortTokens} from "infinity-core/test/helpers/SortTokens.sol";
+import {Deployers} from "infinity-core/test/pool-cl/helpers/Deployers.sol";
 import {MockERC20} from "solmate/src/test/utils/mocks/MockERC20.sol";
 
-import {Hooks} from "pancake-v4-core/src/libraries/Hooks.sol";
-import {ICLRouterBase} from "pancake-v4-periphery/src/pool-cl/interfaces/ICLRouterBase.sol";
+import {Hooks} from "infinity-core/src/libraries/Hooks.sol";
+import {ICLRouterBase} from "infinity-periphery/src/pool-cl/interfaces/ICLRouterBase.sol";
 import {DeployPermit2} from "permit2/test/utils/DeployPermit2.sol";
 import {IAllowanceTransfer} from "permit2/src/interfaces/IAllowanceTransfer.sol";
 

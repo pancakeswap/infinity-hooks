@@ -1,6 +1,6 @@
-# Pancake v4 Hooks
+# Infinity Hooks
 
-Hook examples for PancakeSwap v4 pools.
+Hook examples for PancakeSwap Infinity pools.
 Also provides base hook abstract contracts for developers to use as a starting
 point for their own hooks.
 

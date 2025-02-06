@@ -15,12 +15,12 @@ import {MockERC20} from "solmate/src/test/utils/mocks/MockERC20.sol";
  *     --slow
  *
  * Step 2: Verify
- * forge verify-contract <address> lib/pancake-v4-universal-router/lib/pancake-v4-periphery/lib/pancake-v4-core/lib/solmate/src/test/utils/mocks/MockERC20.sol:MockERC20 --watch \
+ * forge verify-contract <address> lib/infinity-universal-router/lib/infinity-periphery/lib/infinity-core/lib/solmate/src/test/utils/mocks/MockERC20.sol:MockERC20 --watch \
  *      --chain <chain_id> --constructor-args $(cast abi-encode "constructor(string, string, uint256)" "MockVeCake" "VeCake" "18")
  */
 contract DeployMockVeTokenScript is BaseScript {
     function getDeploymentSalt() public pure override returns (bytes32) {
-        return keccak256("PANCAKE-V4-HOOKS/MockERC20/0.90");
+        return keccak256("INFINITY-HOOKS/MockERC20/0.90");
     }
 
     function run() public {
