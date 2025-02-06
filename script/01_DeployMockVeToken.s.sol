@@ -20,7 +20,7 @@ import {MockERC20} from "solmate/src/test/utils/mocks/MockERC20.sol";
  */
 contract DeployMockVeTokenScript is BaseScript {
     function getDeploymentSalt() public pure override returns (bytes32) {
-        return keccak256("INFINITY-HOOKS/MockERC20/0.90");
+        return keccak256("INFINITY-HOOKS/MockERC20/0.97");
     }
 
     function run() public {
