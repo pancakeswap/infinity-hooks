@@ -21,7 +21,7 @@ import {Create3Factory} from "pancake-create3-factory/src/Create3Factory.sol";
  */
 contract DeployCLVeCakeExclusiveHookScript is BaseScript {
     function getDeploymentSalt() public pure override returns (bytes32) {
-        return keccak256("INFINITY-HOOKS/CLVeCakeExclusiveHook/0.90");
+        return keccak256("INFINITY-HOOKS/CLVeCakeExclusiveHook/0.97");
     }
 
     function run() public {
