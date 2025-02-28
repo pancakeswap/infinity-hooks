@@ -111,18 +111,45 @@ abstract contract BinBaseHook is IBinHooks {
     }
 
     /// @inheritdoc IBinHooks
-    function beforeInitialize(address, PoolKey calldata, uint24) external virtual returns (bytes4) {
-        revert HookNotImplemented();
-    }
-
-    /// @inheritdoc IBinHooks
-    function afterInitialize(address, PoolKey calldata, uint24) external virtual returns (bytes4) {
-        revert HookNotImplemented();
-    }
-
-    /// @inheritdoc IBinHooks
-    function beforeMint(address, PoolKey calldata, IBinPoolManager.MintParams calldata, bytes calldata)
+    function beforeInitialize(address sender, PoolKey calldata key, uint24 activeId)
         external
+        virtual
+        poolManagerOnly
+        returns (bytes4)
+    {
+        return _beforeInitialize(sender, key, activeId);
+    }
+
+    function _beforeInitialize(address, PoolKey calldata, uint24) internal virtual returns (bytes4) {
+        revert HookNotImplemented();
+    }
+
+    /// @inheritdoc IBinHooks
+    function afterInitialize(address sender, PoolKey calldata key, uint24 activeId)
+        external
+        virtual
+        poolManagerOnly
+        returns (bytes4)
+    {
+        return _afterInitialize(sender, key, activeId);
+    }
+
+    function _afterInitialize(address, PoolKey calldata, uint24) internal virtual returns (bytes4) {
+        revert HookNotImplemented();
+    }
+
+    /// @inheritdoc IBinHooks
+    function beforeMint(
+        address sender,
+        PoolKey calldata key,
+        IBinPoolManager.MintParams calldata params,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, uint24) {
+        return _beforeMint(sender, key, params, hookData);
+    }
+
+    function _beforeMint(address, PoolKey calldata, IBinPoolManager.MintParams calldata, bytes calldata)
+        internal
         virtual
         returns (bytes4, uint24)
     {
@@ -130,8 +157,18 @@ abstract contract BinBaseHook is IBinHooks {
     }
 
     /// @inheritdoc IBinHooks
-    function afterMint(address, PoolKey calldata, IBinPoolManager.MintParams calldata, BalanceDelta, bytes calldata)
-        external
+    function afterMint(
+        address sender,
+        PoolKey calldata key,
+        IBinPoolManager.MintParams calldata params,
+        BalanceDelta delta,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, BalanceDelta) {
+        return _afterMint(sender, key, params, delta, hookData);
+    }
+
+    function _afterMint(address, PoolKey calldata, IBinPoolManager.MintParams calldata, BalanceDelta, bytes calldata)
+        internal
         virtual
         returns (bytes4, BalanceDelta)
     {
@@ -139,8 +176,17 @@ abstract contract BinBaseHook is IBinHooks {
     }
 
     /// @inheritdoc IBinHooks
-    function beforeBurn(address, PoolKey calldata, IBinPoolManager.BurnParams calldata, bytes calldata)
-        external
+    function beforeBurn(
+        address sender,
+        PoolKey calldata key,
+        IBinPoolManager.BurnParams calldata params,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4) {
+        return _beforeBurn(sender, key, params, hookData);
+    }
+
+    function _beforeBurn(address, PoolKey calldata, IBinPoolManager.BurnParams calldata, bytes calldata)
+        internal
         virtual
         returns (bytes4)
     {
@@ -148,8 +194,18 @@ abstract contract BinBaseHook is IBinHooks {
     }
 
     /// @inheritdoc IBinHooks
-    function afterBurn(address, PoolKey calldata, IBinPoolManager.BurnParams calldata, BalanceDelta, bytes calldata)
-        external
+    function afterBurn(
+        address sender,
+        PoolKey calldata key,
+        IBinPoolManager.BurnParams calldata params,
+        BalanceDelta delta,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, BalanceDelta) {
+        return _afterBurn(sender, key, params, delta, hookData);
+    }
+
+    function _afterBurn(address, PoolKey calldata, IBinPoolManager.BurnParams calldata, BalanceDelta, bytes calldata)
+        internal
         virtual
         returns (bytes4, BalanceDelta)
     {
@@ -157,8 +213,18 @@ abstract contract BinBaseHook is IBinHooks {
     }
 
     /// @inheritdoc IBinHooks
-    function beforeSwap(address, PoolKey calldata, bool, int128, bytes calldata)
-        external
+    function beforeSwap(
+        address sender,
+        PoolKey calldata key,
+        bool swapForY,
+        int128 amountSpecified,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, BeforeSwapDelta, uint24) {
+        return _beforeSwap(sender, key, swapForY, amountSpecified, hookData);
+    }
+
+    function _beforeSwap(address, PoolKey calldata, bool, int128, bytes calldata)
+        internal
         virtual
         returns (bytes4, BeforeSwapDelta, uint24)
     {
@@ -166,8 +232,19 @@ abstract contract BinBaseHook is IBinHooks {
     }
 
     /// @inheritdoc IBinHooks
-    function afterSwap(address, PoolKey calldata, bool, int128, BalanceDelta, bytes calldata)
-        external
+    function afterSwap(
+        address sender,
+        PoolKey calldata key,
+        bool swapForY,
+        int128 amountSpecified,
+        BalanceDelta delta,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, int128) {
+        return _afterSwap(sender, key, swapForY, amountSpecified, delta, hookData);
+    }
+
+    function _afterSwap(address, PoolKey calldata, bool, int128, BalanceDelta, bytes calldata)
+        internal
         virtual
         returns (bytes4, int128)
     {
@@ -175,8 +252,18 @@ abstract contract BinBaseHook is IBinHooks {
     }
 
     /// @inheritdoc IBinHooks
-    function beforeDonate(address, PoolKey calldata, uint256, uint256, bytes calldata)
-        external
+    function beforeDonate(
+        address sender,
+        PoolKey calldata key,
+        uint256 amount0,
+        uint256 amount1,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4) {
+        return _beforeDonate(sender, key, amount0, amount1, hookData);
+    }
+
+    function _beforeDonate(address, PoolKey calldata, uint256, uint256, bytes calldata)
+        internal
         virtual
         returns (bytes4)
     {
@@ -184,8 +271,18 @@ abstract contract BinBaseHook is IBinHooks {
     }
 
     /// @inheritdoc IBinHooks
-    function afterDonate(address, PoolKey calldata, uint256, uint256, bytes calldata)
-        external
+    function afterDonate(
+        address sender,
+        PoolKey calldata key,
+        uint256 amount0,
+        uint256 amount1,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4) {
+        return _afterDonate(sender, key, amount0, amount1, hookData);
+    }
+
+    function _afterDonate(address, PoolKey calldata, uint256, uint256, bytes calldata)
+        internal
         virtual
         returns (bytes4)
     {

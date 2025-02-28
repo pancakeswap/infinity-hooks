@@ -49,8 +49,8 @@ contract SampleCLDynamicFeeHook is CLBaseHook {
         );
     }
 
-    function afterInitialize(address sender, PoolKey calldata key, uint160 sqrtPriceX96, int24 tick)
-        external
+    function _afterInitialize(address sender, PoolKey calldata key, uint160 sqrtPriceX96, int24 tick)
+        internal
         override
         returns (bytes4)
     {
@@ -58,12 +58,12 @@ contract SampleCLDynamicFeeHook is CLBaseHook {
         return this.afterInitialize.selector;
     }
 
-    function beforeSwap(
+    function _beforeSwap(
         address sender,
         PoolKey calldata key,
         ICLPoolManager.SwapParams calldata params,
         bytes calldata hookData
-    ) external override returns (bytes4, BeforeSwapDelta, uint24) {
+    ) internal override returns (bytes4, BeforeSwapDelta, uint24) {
         // if enableLPFeeOverride, the lp fee for the ongoing swap will be 0
         if (enableLPFeeOverride) {
             return (

@@ -87,13 +87,7 @@ contract CLGeomeanOracle is CLBaseHook {
         );
     }
 
-    function beforeInitialize(address, PoolKey calldata key, uint160)
-        external
-        view
-        override
-        poolManagerOnly
-        returns (bytes4)
-    {
+    function _beforeInitialize(address, PoolKey calldata key, uint160) internal override returns (bytes4) {
         // This is to limit the fragmentation of pools using this oracle hook.
         // In other words, there may only be one pool per pair of tokens that use
         // this hook. The tick spacing is set to the maximum because we only allow
@@ -104,12 +98,7 @@ contract CLGeomeanOracle is CLBaseHook {
         return this.beforeInitialize.selector;
     }
 
-    function afterInitialize(address, PoolKey calldata key, uint160, int24)
-        external
-        override
-        poolManagerOnly
-        returns (bytes4)
-    {
+    function _afterInitialize(address, PoolKey calldata key, uint160, int24) internal override returns (bytes4) {
         PoolId id = key.toId();
         (states[id].cardinality, states[id].cardinalityNext) = observations[id].initialize(_blockTimestamp());
         return this.afterInitialize.selector;
@@ -127,12 +116,12 @@ contract CLGeomeanOracle is CLBaseHook {
         );
     }
 
-    function beforeAddLiquidity(
+    function _beforeAddLiquidity(
         address sender,
         PoolKey calldata key,
         ICLPoolManager.ModifyLiquidityParams calldata params,
         bytes calldata hookData
-    ) external override returns (bytes4) {
+    ) internal override returns (bytes4) {
         int24 maxTickSpacing = TickMath.MAX_TICK_SPACING;
         if (
             params.tickLower != TickMath.minUsableTick(maxTickSpacing)
@@ -142,19 +131,18 @@ contract CLGeomeanOracle is CLBaseHook {
         return this.beforeAddLiquidity.selector;
     }
 
-    function beforeRemoveLiquidity(
+    function _beforeRemoveLiquidity(
         address sender,
         PoolKey calldata key,
         ICLPoolManager.ModifyLiquidityParams calldata params,
         bytes calldata hookData
-    ) external override poolManagerOnly returns (bytes4) {
+    ) internal override returns (bytes4) {
         revert OraclePoolMustLockLiquidity();
     }
 
-    function beforeSwap(address, PoolKey calldata key, ICLPoolManager.SwapParams calldata, bytes calldata)
-        external
+    function _beforeSwap(address, PoolKey calldata key, ICLPoolManager.SwapParams calldata, bytes calldata)
+        internal
         override
-        poolManagerOnly
         returns (bytes4, BeforeSwapDelta, uint24)
     {
         _updatePool(key);

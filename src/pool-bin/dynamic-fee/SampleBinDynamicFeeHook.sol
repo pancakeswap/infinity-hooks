@@ -49,13 +49,13 @@ contract SampleBinDynamicFeeHook is BinBaseHook {
         );
     }
 
-    function afterInitialize(address, PoolKey calldata key, uint24) external override returns (bytes4) {
+    function _afterInitialize(address, PoolKey calldata key, uint24) internal override returns (bytes4) {
         setDynamicLpFee(key, DEFAULT_LP_FEE);
         return this.afterInitialize.selector;
     }
 
-    function beforeMint(address, PoolKey calldata, IBinPoolManager.MintParams calldata, bytes calldata)
-        external
+    function _beforeMint(address, PoolKey calldata, IBinPoolManager.MintParams calldata, bytes calldata)
+        internal
         override
         returns (bytes4, uint24)
     {
@@ -68,8 +68,8 @@ contract SampleBinDynamicFeeHook is BinBaseHook {
         return (this.beforeMint.selector, 0);
     }
 
-    function beforeSwap(address, PoolKey calldata, bool, int128, bytes calldata)
-        external
+    function _beforeSwap(address, PoolKey calldata, bool, int128, bytes calldata)
+        internal
         override
         returns (bytes4, BeforeSwapDelta, uint24)
     {

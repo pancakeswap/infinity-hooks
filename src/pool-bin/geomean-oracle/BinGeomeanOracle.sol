@@ -75,10 +75,9 @@ contract BinGeomeanOracle is BinBaseHook {
         oracle.update(parameters, activeId);
     }
 
-    function beforeInitialize(address sender, PoolKey calldata key, uint24 activeId)
-        external
+    function _beforeInitialize(address sender, PoolKey calldata key, uint24 activeId)
+        internal
         override
-        poolManagerOnly
         returns (bytes4)
     {
         if (key.fee != 0) {
@@ -87,32 +86,32 @@ contract BinGeomeanOracle is BinBaseHook {
         return this.beforeInitialize.selector;
     }
 
-    function beforeMint(
+    function _beforeMint(
         address sender,
         PoolKey calldata key,
         IBinPoolManager.MintParams calldata params,
         bytes calldata hookData
-    ) external override poolManagerOnly returns (bytes4, uint24) {
+    ) internal override returns (bytes4, uint24) {
         _updatePool(key);
         return (this.beforeMint.selector, 0);
     }
 
-    function beforeBurn(
+    function _beforeBurn(
         address sender,
         PoolKey calldata key,
         IBinPoolManager.BurnParams calldata params,
         bytes calldata hookData
-    ) external override poolManagerOnly returns (bytes4) {
+    ) internal override returns (bytes4) {
         revert OraclePoolMustLockLiquidity();
     }
 
-    function beforeSwap(
+    function _beforeSwap(
         address sender,
         PoolKey calldata key,
         bool swapForY,
         int128 amountSpecified,
         bytes calldata hookData
-    ) external override poolManagerOnly returns (bytes4, BeforeSwapDelta, uint24) {
+    ) internal override returns (bytes4, BeforeSwapDelta, uint24) {
         _updatePool(key);
         return (this.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
     }
