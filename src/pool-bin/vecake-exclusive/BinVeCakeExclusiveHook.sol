@@ -49,10 +49,9 @@ contract BinVeCakeExclusiveHook is BinBaseHook {
 
     /// @dev Using tx.origin is a workaround for now. Do NOT use this in
     /// production
-    function beforeSwap(address, PoolKey calldata, bool, int128, bytes calldata)
-        external
+    function _beforeSwap(address, PoolKey calldata, bool, int128, bytes calldata)
+        internal
         override
-        poolManagerOnly
         returns (bytes4, BeforeSwapDelta, uint24)
     {
         if (veCake.balanceOf(tx.origin) < 1 ether) {

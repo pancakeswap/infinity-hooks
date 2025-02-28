@@ -248,12 +248,7 @@ contract CLFullRange is CLBaseHook {
 
     /// @dev Deploy a new liquidity token for the pool and initialize the
     /// PoolInfo
-    function beforeInitialize(address, PoolKey calldata key, uint160)
-        external
-        override
-        poolManagerOnly
-        returns (bytes4)
-    {
+    function _beforeInitialize(address, PoolKey calldata key, uint160) internal override returns (bytes4) {
         if (key.parameters.getTickSpacing() != 60) revert TickSpacingNotDefault();
 
         PoolId poolId = key.toId();
@@ -277,34 +272,33 @@ contract CLFullRange is CLBaseHook {
     }
 
     /// @dev Users can only add liquidity through this hook
-    function beforeAddLiquidity(
+    function _beforeAddLiquidity(
         address sender,
         PoolKey calldata key,
         ICLPoolManager.ModifyLiquidityParams calldata params,
         bytes calldata hookData
-    ) external override poolManagerOnly returns (bytes4) {
+    ) internal override returns (bytes4) {
         if (sender != address(this)) revert SenderMustBeHook();
 
         return this.beforeAddLiquidity.selector;
     }
 
     /// @dev Users can only add liquidity through this hook
-    function beforeRemoveLiquidity(
+    function _beforeRemoveLiquidity(
         address sender,
         PoolKey calldata key,
         ICLPoolManager.ModifyLiquidityParams calldata params,
         bytes calldata hookData
-    ) external override poolManagerOnly returns (bytes4) {
+    ) internal override returns (bytes4) {
         if (sender != address(this)) revert SenderMustBeHook();
 
         return this.beforeRemoveLiquidity.selector;
     }
 
     /// @dev Assume that the pool must have fee
-    function beforeSwap(address, PoolKey calldata key, ICLPoolManager.SwapParams calldata, bytes calldata)
-        external
+    function _beforeSwap(address, PoolKey calldata key, ICLPoolManager.SwapParams calldata, bytes calldata)
+        internal
         override
-        poolManagerOnly
         returns (bytes4, BeforeSwapDelta, uint24)
     {
         PoolId poolId = key.toId();

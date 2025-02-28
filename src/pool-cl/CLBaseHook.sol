@@ -111,62 +111,129 @@ abstract contract CLBaseHook is ICLHooks {
     }
 
     /// @inheritdoc ICLHooks
-    function beforeInitialize(address, PoolKey calldata, uint160) external virtual returns (bytes4) {
+    function beforeInitialize(address sender, PoolKey calldata key, uint160 sqrtPriceX96)
+        external
+        virtual
+        poolManagerOnly
+        returns (bytes4)
+    {
+        return _beforeInitialize(sender, key, sqrtPriceX96);
+    }
+
+    function _beforeInitialize(address, PoolKey calldata, uint160) internal virtual returns (bytes4) {
         revert HookNotImplemented();
     }
 
     /// @inheritdoc ICLHooks
-    function afterInitialize(address, PoolKey calldata, uint160, int24) external virtual returns (bytes4) {
+    function afterInitialize(address sender, PoolKey calldata key, uint160 sqrtPriceX96, int24 tick)
+        external
+        virtual
+        poolManagerOnly
+        returns (bytes4)
+    {
+        return _afterInitialize(sender, key, sqrtPriceX96, tick);
+    }
+
+    function _afterInitialize(address, PoolKey calldata, uint160, int24) internal virtual returns (bytes4) {
         revert HookNotImplemented();
     }
 
     /// @inheritdoc ICLHooks
     function beforeAddLiquidity(
+        address sender,
+        PoolKey calldata key,
+        ICLPoolManager.ModifyLiquidityParams calldata params,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4) {
+        return _beforeAddLiquidity(sender, key, params, hookData);
+    }
+
+    function _beforeAddLiquidity(
         address,
         PoolKey calldata,
         ICLPoolManager.ModifyLiquidityParams calldata,
         bytes calldata
-    ) external virtual returns (bytes4) {
+    ) internal virtual returns (bytes4) {
         revert HookNotImplemented();
     }
 
     /// @inheritdoc ICLHooks
     function afterAddLiquidity(
+        address sender,
+        PoolKey calldata key,
+        ICLPoolManager.ModifyLiquidityParams calldata params,
+        BalanceDelta delta,
+        BalanceDelta feesAccrued,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, BalanceDelta) {
+        return _afterAddLiquidity(sender, key, params, delta, feesAccrued, hookData);
+    }
+
+    function _afterAddLiquidity(
         address,
         PoolKey calldata,
         ICLPoolManager.ModifyLiquidityParams calldata,
         BalanceDelta,
         BalanceDelta,
         bytes calldata
-    ) external virtual returns (bytes4, BalanceDelta) {
+    ) internal virtual returns (bytes4, BalanceDelta) {
         revert HookNotImplemented();
     }
 
     /// @inheritdoc ICLHooks
     function beforeRemoveLiquidity(
+        address sender,
+        PoolKey calldata key,
+        ICLPoolManager.ModifyLiquidityParams calldata params,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4) {
+        return _beforeRemoveLiquidity(sender, key, params, hookData);
+    }
+
+    function _beforeRemoveLiquidity(
         address,
         PoolKey calldata,
         ICLPoolManager.ModifyLiquidityParams calldata,
         bytes calldata
-    ) external virtual returns (bytes4) {
+    ) internal virtual returns (bytes4) {
         revert HookNotImplemented();
     }
 
     /// @inheritdoc ICLHooks
     function afterRemoveLiquidity(
+        address sender,
+        PoolKey calldata key,
+        ICLPoolManager.ModifyLiquidityParams calldata params,
+        BalanceDelta delta,
+        BalanceDelta feesAccrued,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, BalanceDelta) {
+        return _afterRemoveLiquidity(sender, key, params, delta, feesAccrued, hookData);
+    }
+
+    function _afterRemoveLiquidity(
         address,
         PoolKey calldata,
         ICLPoolManager.ModifyLiquidityParams calldata,
         BalanceDelta,
         BalanceDelta,
         bytes calldata
-    ) external virtual returns (bytes4, BalanceDelta) {
+    ) internal virtual poolManagerOnly returns (bytes4, BalanceDelta) {
         revert HookNotImplemented();
     }
 
     /// @inheritdoc ICLHooks
-    function beforeSwap(address, PoolKey calldata, ICLPoolManager.SwapParams calldata, bytes calldata)
-        external
+    function beforeSwap(
+        address sender,
+        PoolKey calldata key,
+        ICLPoolManager.SwapParams calldata params,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, BeforeSwapDelta, uint24) {
+        return _beforeSwap(sender, key, params, hookData);
+    }
+
+    function _beforeSwap(address, PoolKey calldata, ICLPoolManager.SwapParams calldata, bytes calldata)
+        internal
         virtual
         returns (bytes4, BeforeSwapDelta, uint24)
     {
@@ -174,8 +241,18 @@ abstract contract CLBaseHook is ICLHooks {
     }
 
     /// @inheritdoc ICLHooks
-    function afterSwap(address, PoolKey calldata, ICLPoolManager.SwapParams calldata, BalanceDelta, bytes calldata)
-        external
+    function afterSwap(
+        address sender,
+        PoolKey calldata key,
+        ICLPoolManager.SwapParams calldata params,
+        BalanceDelta delta,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4, int128) {
+        return _afterSwap(sender, key, params, delta, hookData);
+    }
+
+    function _afterSwap(address, PoolKey calldata, ICLPoolManager.SwapParams calldata, BalanceDelta, bytes calldata)
+        internal
         virtual
         returns (bytes4, int128)
     {
@@ -183,8 +260,18 @@ abstract contract CLBaseHook is ICLHooks {
     }
 
     /// @inheritdoc ICLHooks
-    function beforeDonate(address, PoolKey calldata, uint256, uint256, bytes calldata)
-        external
+    function beforeDonate(
+        address sender,
+        PoolKey calldata key,
+        uint256 amount0,
+        uint256 amount1,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4) {
+        return _beforeDonate(sender, key, amount0, amount1, hookData);
+    }
+
+    function _beforeDonate(address, PoolKey calldata, uint256, uint256, bytes calldata)
+        internal
         virtual
         returns (bytes4)
     {
@@ -192,8 +279,18 @@ abstract contract CLBaseHook is ICLHooks {
     }
 
     /// @inheritdoc ICLHooks
-    function afterDonate(address, PoolKey calldata, uint256, uint256, bytes calldata)
-        external
+    function afterDonate(
+        address sender,
+        PoolKey calldata key,
+        uint256 amount0,
+        uint256 amount1,
+        bytes calldata hookData
+    ) external virtual poolManagerOnly returns (bytes4) {
+        return _afterDonate(sender, key, amount0, amount1, hookData);
+    }
+
+    function _afterDonate(address, PoolKey calldata, uint256, uint256, bytes calldata)
+        internal
         virtual
         returns (bytes4)
     {
