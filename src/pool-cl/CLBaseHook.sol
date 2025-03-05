@@ -57,10 +57,10 @@ abstract contract CLBaseHook is ICLHooks {
         bool afterSwap;
         bool beforeDonate;
         bool afterDonate;
-        bool beforeSwapReturnsDelta;
-        bool afterSwapReturnsDelta;
-        bool afterAddLiquidiyReturnsDelta;
-        bool afterRemoveLiquidiyReturnsDelta;
+        bool beforeSwapReturnDelta;
+        bool afterSwapReturnDelta;
+        bool afterAddLiquidityReturnDelta;
+        bool afterRemoveLiquidityReturnDelta;
     }
 
     /// @notice The address of the pool manager
@@ -310,10 +310,10 @@ abstract contract CLBaseHook is ICLHooks {
                 | (permissions.afterSwap ? 1 << HOOKS_AFTER_SWAP_OFFSET : 0)
                 | (permissions.beforeDonate ? 1 << HOOKS_BEFORE_DONATE_OFFSET : 0)
                 | (permissions.afterDonate ? 1 << HOOKS_AFTER_DONATE_OFFSET : 0)
-                | (permissions.beforeSwapReturnsDelta ? 1 << HOOKS_BEFORE_SWAP_RETURNS_DELTA_OFFSET : 0)
-                | (permissions.afterSwapReturnsDelta ? 1 << HOOKS_AFTER_SWAP_RETURNS_DELTA_OFFSET : 0)
-                | (permissions.afterAddLiquidiyReturnsDelta ? 1 << HOOKS_AFTER_ADD_LIQUIDIY_RETURNS_DELTA_OFFSET : 0)
-                | (permissions.afterRemoveLiquidiyReturnsDelta ? 1 << HOOKS_AFTER_REMOVE_LIQUIDIY_RETURNS_DELTA_OFFSET : 0)
+                | (permissions.beforeSwapReturnDelta ? 1 << HOOKS_BEFORE_SWAP_RETURNS_DELTA_OFFSET : 0)
+                | (permissions.afterSwapReturnDelta ? 1 << HOOKS_AFTER_SWAP_RETURNS_DELTA_OFFSET : 0)
+                | (permissions.afterAddLiquidityReturnDelta ? 1 << HOOKS_AFTER_ADD_LIQUIDIY_RETURNS_DELTA_OFFSET : 0)
+                | (permissions.afterRemoveLiquidityReturnDelta ? 1 << HOOKS_AFTER_REMOVE_LIQUIDIY_RETURNS_DELTA_OFFSET : 0)
         );
     }
 }
