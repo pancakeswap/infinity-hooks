@@ -256,6 +256,7 @@ contract CLLimitOrderHookTest is Test, Deployers, DeployPermit2 {
             }),
             block.timestamp
         );
+        vm.snapshotGasLastCall("CLLimitOrder_afterSwap_fillEpoch");
 
         assertEq(limitOrder.getTickLowerLast(id), 887220);
         (, int24 tick,,) = poolManager.getSlot0(id);
