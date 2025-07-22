@@ -240,7 +240,35 @@ contract CLLimitOrderHookTest is Test, Deployers, DeployPermit2 {
         assertEq(abi.decode(entries[1].data, (uint256)), 2995);
     }
 
+    function testSwapAcrossRange_single_order() public {
+        (, int24 tickBefore,,) = poolManager.getSlot0(id);
+        assertEq(tickBefore, 0);
+        int24 tickLower = 0;
+        bool zeroForOne = true;
+        uint128 liquidity = 1000000;
+        limitOrder.place(key, tickLower, zeroForOne, liquidity);
+
+        swapRouter.exactInputSingle(
+            ICLRouterBase.CLSwapExactInputSingleParams({
+                poolKey: key,
+                zeroForOne: false,
+                amountIn: 5e16,
+                amountOutMinimum: 0,
+                hookData: ZERO_BYTES
+            }),
+            block.timestamp
+        );
+        vm.snapshotGasLastCall("CLLimitOrder_fillEpoch_single");
+
+        assertEq(limitOrder.getTickLowerLast(id), 60);
+        (, int24 tick,,) = poolManager.getSlot0(id);
+        assertEq(tick, 99);
+
+    }
+
     function testSwapAcrossRange() public {
+        (, int24 tickBefore,,) = poolManager.getSlot0(id);
+        assertEq(tickBefore, 0);
         int24 tickLower = 0;
         bool zeroForOne = true;
         uint128 liquidity = 1000000;
@@ -256,6 +284,7 @@ contract CLLimitOrderHookTest is Test, Deployers, DeployPermit2 {
             }),
             block.timestamp
         );
+        vm.snapshotGasLastCall("CLLimitOrder_afterSwap_fillEpoch");
 
         assertEq(limitOrder.getTickLowerLast(id), 887220);
         (, int24 tick,,) = poolManager.getSlot0(id);
