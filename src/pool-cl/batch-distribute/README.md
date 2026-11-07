@@ -87,7 +87,7 @@ Spraay charges `feeBps` (currently **30 bps = 0.3%**) **on top of** the distribu
 | Chain     | Spraay (`SprayContract`)                     | CLPoolManager                                |
 | --------- | -------------------------------------------- | -------------------------------------------- |
 | BNB Chain | `0x3093a2951FB77b3beDfB8BA20De645F7413432C1` | `0xa0FfB9c1CE1Fe56963B0321B32E7A0302114058b` |
-| Base      | `0x1646452F98E36A3c9Cfc3eDD8868221E207B5eEC` | `0xa0FfB9c1CE1Fe56963B0321B32E7A0302114058b` |
+| Base      | `0x4B1d57EBFaBDF3F21F30f210a1d95f649E9edD4c` | `0xa0FfB9c1CE1Fe56963B0321B32E7A0302114058b` |
 
 Both Spraay contracts are verified on Sourcify (exact match) and have identical source. The addresses are also available in Solidity via `SpraayAddresses.sol` and in `script/config/{bsc,base}-mainnet.json`.
 
